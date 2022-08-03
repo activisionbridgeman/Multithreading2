@@ -2,10 +2,96 @@
 //
 
 #include <iostream>
+#include <chrono>
+#include <thread>
+
+bool DidQuit = false;
+bool ShouldDecrementLife = false;
+
+struct Character 
+{
+    float Position = 0.0f;
+    int Score = 0;
+    int Lives = 1;
+
+    void DisplayStats() 
+    {
+        std::cout << "Lives: " << Lives << '\n';
+    }
+};
+
+Character Player;
+
+void UpdateCharacter1() 
+{
+    while (!DidQuit) 
+    {
+        if (ShouldDecrementLife) 
+        {
+            if (Player.Lives > 0) 
+            {
+                //std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::this_thread::yield();
+                --Player.Lives;
+            }
+        }
+    }
+}
+
+void UpdateCharacter2()
+{
+    while (!DidQuit)
+    {
+        if (ShouldDecrementLife)
+        {
+            if (Player.Lives > 0)
+            {
+                //std::this_thread::sleep_for(std::chrono::milliseconds(500));
+                std::this_thread::yield();
+                --Player.Lives;
+            }
+        }
+    }
+}
+
+void ProcessInput() 
+{
+    while (!DidQuit) 
+    {
+        std::cout << "'a' to decrement player life\n";
+        std::cout << "'d' to display player stats\n";
+        std::cout << "'q' to quit\n";
+        char userInput;
+        std::cin >> userInput;
+        switch (userInput)
+        {
+        case 'a':
+            ShouldDecrementLife = true;
+            break;
+        case 'd':
+            Player.DisplayStats();
+            break;
+        case 'q':
+            DidQuit = true;
+            break;
+        default:
+            break;
+        }
+        DidQuit = (userInput == 'q');
+    }
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    std::thread InputHandler(ProcessInput);
+    std::thread CharacterUpdate1(UpdateCharacter1);
+    std::thread CharacterUpdate2(UpdateCharacter2);
+
+    InputHandler.join();
+    CharacterUpdate1.join();
+    CharacterUpdate2.join();
+
+    return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
