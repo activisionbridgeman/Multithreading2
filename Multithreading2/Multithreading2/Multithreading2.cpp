@@ -1,4 +1,5 @@
 // Multithreading2.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// Manages Player and health of Player with multithreading
 //
 
 #include <iostream>
