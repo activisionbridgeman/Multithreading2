@@ -5,6 +5,8 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <mutex>
+std::mutex Mutex;
 
 bool DidQuit = false;
 bool ShouldDecrementLife = false;
@@ -12,7 +14,8 @@ bool ShouldDecrementLife = false;
 struct Character 
 {
     float Position = 0.0f;
-    int Score = 0;
+    std::atomic<int> Score = 0;
+    //int Score = 0;
     int Lives = 1;
 
     void DisplayStats() 
@@ -29,6 +32,7 @@ void UpdateCharacter1()
     {
         if (ShouldDecrementLife) 
         {
+            std::lock_guard<std::mutex> Guard(Mutex);
             if (Player.Lives > 0) 
             {
                 //std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -45,6 +49,7 @@ void UpdateCharacter2()
     {
         if (ShouldDecrementLife)
         {
+            std::lock_guard<std::mutex> Guard(Mutex);
             if (Player.Lives > 0)
             {
                 //std::this_thread::sleep_for(std::chrono::milliseconds(500));
